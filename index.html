@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Food Allergen Management System</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <link rel="stylesheet" href={{ url_for("static", filename='css/style.css' ) }}>
+</head>
+<body>
+
+
+
+
+    <!-- <div class="container">
+        <div class="row">
+            <div class="col-md-4 justify-content-left">
+                <img src="static/assets/Kelseys_logo.png" alt="logo" class="img-fluid logo">
+            </div>
+            <div class="col-md-8 my-auto mx-auto text-start">
+                <h1 class="heading ms-auto">Food Allergen</h1>
+                <h1 class="heading">Management System</h1>
+            </div>
+        </div>
+    </div> -->
+    <!-- Search Boxes -->
+
+    <header>
+        <div class="navbar">
+            <img id="logo" src="../static/assets/kelsey_logo13.png" alt="Logo" style="background-color: black;">
+                <ul class="nav-links">
+                    <li><a href = "https://www.kelseys.ca/">Home</a></li>
+                    <li><a href="https://www.instagram.com/kelseysroadhouse/?hl=en">Instagram</a></li>
+                    <li><a href="mailto:inder.b1307@gmail.com">Email</a></li>
+                    <li><a href="tel: +19056248501">Contact</a></li>
+                </ul>
+        </div>
+
+    </header>
+
+    <div class="boxi">
+        <div class="row d-flex justify-content-center text-center">
+            <h1>Food Allergen</h1>
+            <h1>Management System</h1>
+        </div>
+        <div class="row justify-content-center">
+            <div class="col-6 search-box search-container justify-content-center" style="margin-top: 100px;">
+                <input class="w-100 form-control" type="text" id="searchInput" onkeyup="showDropdown()" placeholder="Search For Dish..">
+                <div class="dropdown-menu mb-3" id="dish">
+                </div>
+
+                <input id="allergen" type="text" class="form-control d-none" placeholder="Allergen" name="search" />
+                
+                <div class="text-center">
+                    <button id="submit-button" class="btn btn-primary d-none" type="button" onclick="showResults()">Search</button>
+                    <p class="d-none fs-4 mt-4" id="answer"></p>
+                    <button id="ingredients-button" class="btn btn-primary mt-4 d-none" type="button" onclick="showIngredients()">Show Ingredients</button>
+                    <div class="container d-none" id="ingredients-info">
+                        <div class="row">
+                            <div class="col">
+                                <h3 class="text-center">Ingredients:</h3>
+                                <p id="ingredients" class="text-center"></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div> 
+        </div>
+    </div>
+
+    <footer>
+
+        <div class="footer">
+            <p>&copy; 2024 I.S and R.K. All rights reserved.</p>
+            <div class="social-links">
+                <a href="https://github.com/inder1307" target="_blank">Github</a>
+                <a href="https://twitter.com/example" target="_blank">Twitter</a>
+                <a href="https://www.instagram.com/rumjeetkaur/" target="_blank">Instagram</a>
+            </div>
+        </div>
+    </footer>
+    
+</body>
+<script>
+    window.addEventListener('load', function () {
+        document.getElementById('searchInput').value = ''; // Clear dish input value
+    
+        document.getElementById('allergen').value = ''; // Clear allergen input value
+    
+        document.getElementById('submit-button').classList.add('d-none'); // Hide submit button on page load
+    });
+    
+
+    fetch("/food_results", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        }
+      }).then((response) => response.json())
+        .then((data) => {
+          if (data.success) {
+            generateDropdown(data.message);
+          } else {
+            alert(data.message);
+            console.error("Result Generation Failed:", data.message);
+          }
+        })
+
+    // Event listener for dish input
+    document.getElementById('searchInput').addEventListener('input', function () {
+        if (this.value.trim() !== "") {
+            document.querySelector('.search-box #allergen').classList.remove('d-none');
+        } else {
+            document.querySelector('.search-box #allergen').classList.add('d-none');
+            document.querySelector('.search-box #submit-button').classList.add('d-none'); // Hide submit button if dish input is empty
+        }
+    });
+
+    // Event listener for allergen input
+    document.getElementById('allergen').addEventListener('input', function () {
+        if (this.value.trim() !== "") {
+            document.querySelector('.search-box #submit-button').classList.remove('d-none');
+        } else {
+            document.querySelector('.search-box #submit-button').classList.add('d-none');
+        }
+    });
+
+    function generateDropdown(results) {
+        var dropdown = document.getElementById('dish');
+        var search_box = document.getElementById('searchInput');
+        search_box.value = '';
+        dropdown.innerHTML = '';
+    
+        var defaultOption = document.createElement('option');
+        defaultOption.text = "Select a dish";
+        defaultOption.value = "";
+        defaultOption.disabled = true;
+        defaultOption.selected = true;
+        defaultOption.defaultSelected = true;
+        dropdown.appendChild(defaultOption);
+    
+        // Add options from the results
+        results.forEach(result => {
+            var option = document.createElement('a');
+            option.id = result; 
+            option.href = "#"; 
+            option.addEventListener('click', function() {
+                selectItem(result);
+            });
+            option.innerHTML = result;
+            dropdown.appendChild(option);
+        });
+    }
+
+    // Show dropdown menu
+    function showDropdown() {
+        var input, filter, div, a, i;
+        input = document.getElementById("searchInput");
+        filter = input.value.toUpperCase();
+        div = document.getElementById("dish");
+        a = div.getElementsByTagName("a");
+        if (filter.length > 0) {
+            div.style.display = "block";
+        } else {
+            div.style.display = "none";
+        }
+        for (i = 0; i < a.length; i++) {
+            if (a[i].innerHTML.toUpperCase().indexOf(filter) > -1) {
+                a[i].style.display = "";
+            } else {
+                a[i].style.display = "none";
+            }
+        }
+    }
+
+    function selectItem(item) {
+        document.getElementById("searchInput").value = item;
+        document.getElementById("dish").style.display = "none";
+    }
+
+    // Close the dropdown menu if the user clicks outside of it
+    window.onclick = function(event) {
+        if (!event.target.matches('#dish')) {
+            var dropdowns = document.getElementsByClassName("dropdown-menu");
+            for (var i = 0; i < dropdowns.length; i++) {
+                var openDropdown = dropdowns[i];
+                if (openDropdown.style.display === "block") {
+                    openDropdown.style.display = "none";
+                }
+            }
+        }
+    }
+
+    function showResults() {
+        var dish = document.getElementById('searchInput').value;
+        var allergen = document.getElementById('allergen').value;
+        var answer = document.getElementById('answer');
+        var show_ingredients = document.getElementById('ingredients-button');
+        var submitButton = document.getElementById('submit-button');
+        var data = {
+            dish: dish,
+            allergen: allergen
+        };
+        fetch("/search", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify(data)
+        }).then((response) => response.json())
+            .then((data) => {
+                if (data.success) {
+                    answer.innerHTML = data.message;
+                    answer.classList.remove('d-none');
+                    show_ingredients.classList.remove('d-none');
+                } else {
+                    alert(data.message);
+                    console.error("Search Failed:", data.message);
+                }
+            })
+    }
+
+    function showIngredients() {
+        var dish = document.getElementById('searchInput').value;
+        var allergen = document.getElementById('allergen').value;
+        var data = {
+            dish: dish,
+            allergen: allergen
+        };
+        fetch("/ingredients", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify(data)
+        }).then((response) => response.json())
+            .then((data) => {
+                if (data.success) {
+                    ingredients_info = document.getElementById('ingredients-info');
+                    ingredients_info.classList.remove('d-none');
+                    ingredients = document.getElementById('ingredients');
+                    ingredients.innerHTML = data.message;
+                } else {
+                    alert(data.message);
+                    console.error("Ingredients Fetch Failed:", data.message);
+                }
+            })
+    }
+
+</script>
+</html>

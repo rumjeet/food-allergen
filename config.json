@@ -1,0 +1,10 @@
+{
+  "apiKey": "AIzaSyD-R8DhQ4q5SOEh6qR8Pu3KltU5r8olQxE",
+  "authDomain": "food-allergen-management.firebaseapp.com",
+  "databaseURL": "https://food-allergen-management-default-rtdb.firebaseio.com",
+  "projectId": "food-allergen-management",
+  "storageBucket": "food-allergen-management.appspot.com",
+  "messagingSenderId": "929052163448",
+  "appId": "1:929052163448:web:e2ca53bfed30aa0bdd5c8d",
+  "measurementId": "G-D518ZZFJG7"
+}
